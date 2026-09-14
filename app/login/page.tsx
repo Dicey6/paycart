@@ -9,13 +9,11 @@ import { Button, Field, Input } from "@/components/ui";
 import { useAuth } from "@/components/providers";
 import { getAuthRedirectUrl, getSupabaseBrowserClient } from "@/lib/supabase";
 
-export default function SignupPage() {
+export default function LoginPage() {
   const router = useRouter();
   const { session, loading: authLoading } = useAuth();
-  const [draft, setDraft] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirm, setConfirm] = useState("");
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -24,38 +22,21 @@ export default function SignupPage() {
     if (!authLoading && session) router.replace("/dashboard");
   }, [authLoading, router, session]);
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (event: FormEvent) => {
+    event.preventDefault();
     setError("");
     setMessage("");
-    if (!draft.trim()) {
-      setError("Enter a username — it'll appear on your card.");
-      return;
-    }
-    if (password !== confirm) {
-      setError("Passwords don't match.");
-      return;
-    }
     setSubmitting(true);
 
     try {
-      const { data, error: signupError } = await getSupabaseBrowserClient().auth.signUp({
+      const { error: signInError } = await getSupabaseBrowserClient().auth.signInWithPassword({
         email: email.trim(),
         password,
-        options: {
-          data: { username: draft.trim() },
-          emailRedirectTo: getAuthRedirectUrl(),
-        },
       });
-      if (signupError) throw signupError;
-
-      if (data.session) {
-        router.replace("/dashboard");
-      } else {
-        setMessage("Check your email to verify your account before logging in.");
-      }
-    } catch (signupError) {
-      setError(signupError instanceof Error ? signupError.message : "Unable to create your account.");
+      if (signInError) throw signInError;
+      router.replace("/dashboard");
+    } catch (loginError) {
+      setError(loginError instanceof Error ? loginError.message : "Unable to log in.");
     } finally {
       setSubmitting(false);
     }
@@ -85,71 +66,47 @@ export default function SignupPage() {
       </div>
       <div className="flex-1 flex items-center justify-center px-5 py-10">
         <div className="w-full max-w-sm">
-          <div className="eyebrow mb-3">VEYA / CREATE</div>
-          <h1 className="text-3xl font-semibold tracking-tight mb-1.5 text-white">Create your VeyaPay account</h1>
+          <div className="eyebrow mb-3">VEYA / ACCESS</div>
+          <h1 className="text-3xl font-semibold tracking-tight mb-1.5 text-white">Log in to VeyaPay</h1>
           <p className="text-sm mb-7 text-slate-400">
-            Get your USDC payment layer online in a couple of minutes.
+            Continue to your Arc wallet-funded virtual card.
           </p>
 
           <form className="space-y-4" onSubmit={handleSubmit}>
-            <Field label="Username" hint="This is how you'll appear on your virtual card.">
-              <Input
-                type="text"
-                placeholder="Ren Uchiha"
-                value={draft}
-                maxLength={24}
-                onChange={(e) => setDraft(e.target.value)}
-              />
-            </Field>
             <Field label="Email">
               <Input
                 type="email"
                 placeholder="you@example.com"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(event) => setEmail(event.target.value)}
                 required
               />
             </Field>
-            <Field label="Password" hint="Use at least 8 characters.">
+            <Field label="Password">
               <Input
                 type="password"
                 placeholder="••••••••"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                minLength={8}
-              />
-            </Field>
-            <Field label="Confirm password">
-              <Input
-                type="password"
-                placeholder="••••••••"
-                value={confirm}
-                onChange={(e) => setConfirm(e.target.value)}
+                onChange={(event) => setPassword(event.target.value)}
                 required
               />
             </Field>
-
             {error && <p className="text-xs text-red-500">{error}</p>}
             {message && <p className="text-xs text-brand-dark dark:text-brand">{message}</p>}
-
             <Button className="w-full py-3" type="submit" disabled={submitting}>
-              {submitting ? "Creating account…" : "Create account"}
+              {submitting ? "Logging in…" : "Log in"}
             </Button>
-            {message && (
+            {error.toLowerCase().includes("confirm") && (
               <button type="button" onClick={() => void resendVerification()} className="w-full text-xs font-medium text-brand-dark dark:text-brand">
                 Resend verification email
               </button>
             )}
-            <p className="text-xs text-center text-neutral-400 dark:text-neutral-500">
-              By continuing you agree to VeyaPay&apos;s Terms and Privacy Policy.
-            </p>
           </form>
 
           <div className="mt-6 text-center text-sm text-neutral-500 dark:text-neutral-400">
-            Already have an account?{" "}
-            <Link href="/login" className="text-brand-dark dark:text-brand font-medium">
-              Log in
+            Don&apos;t have an account?{" "}
+            <Link href="/signup" className="text-brand-dark dark:text-brand font-medium">
+              Create one
             </Link>
           </div>
         </div>

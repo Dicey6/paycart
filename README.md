@@ -1,44 +1,28 @@
-# PayCart
+# VeyaPay
 
-A stablecoin-funded virtual card concept UI, built with Next.js 14 (App Router), TypeScript, and Tailwind CSS.
+A futuristic USDC payment interface for Arc Blockchain with Supabase Auth and public wallet-connection initiation, built with Next.js 14 (App Router), TypeScript, and Tailwind CSS.
 
 ## Pages
 
-- `/` — Home / landing page (hero, narrative, supported funding, how it works, x402, security)
-- `/signup` — Create an account (username entered here shows up on your virtual card)
+- `/` — VeyaPay landing page (Arc + USDC protocol, security, and product overview)
+- `/signup` — Create an account with email verification (username entered here shows up on your virtual card)
+- `/login` — Log in with a verified Supabase account
 - `/dashboard` — Dashboard with balance, virtual card, and connect-wallet CTA
 
-Theme (light/dark) and the signed-up username persist in the browser via `localStorage` — there's no backend yet, this is UI-first as scoped.
+The blue/black light-dark theme persists in the browser. Authentication and profile data come from Supabase; the app does not use localStorage as an auth source.
 
 ## Run locally
 
 ```bash
-npm install
-npm run dev
+pnpm install
+pnpm build
 ```
 
-Then open http://localhost:3000
+Configure Supabase before using the auth flows:
 
-## Deploy to Vercel
+1. Create a Supabase project.
+2. Run [`supabase/schema.sql`](./supabase/schema.sql) in the Supabase SQL editor.
+3. Set `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
+4. Add the app's `/auth/callback` URL to Supabase Auth URL configuration.
 
-**Option A — Vercel CLI**
-
-```bash
-npm install -g vercel
-vercel
-```
-
-Follow the prompts (link or create a project, accept the defaults — Vercel auto-detects Next.js).
-
-**Option B — Git + Vercel dashboard**
-
-1. Push this folder to a new GitHub repo.
-2. Go to https://vercel.com/new and import the repo.
-3. Framework preset: Next.js (auto-detected). No environment variables are required for this UI-only build.
-4. Deploy.
-
-## Notes
-
-- The ETH price ticker on the homepage calls the public CoinGecko API client-side. If that request is ever blocked (rate limit, offline), it falls back to a static reference price so the UI never breaks.
-- Balances, transactions, and card numbers are placeholder/mock data — no real wallet, blockchain, or card infrastructure is connected yet.
-- The codebase is structured (component boundaries, context providers) so Supabase auth and real wallet/card data can be wired in without a rewrite.
+The wallet button only requests a public address from an injected Arc-compatible EVM provider. Funding, transactions, verification, treasury transfers, balances, card issuing, and private-key handling remain out of scope.

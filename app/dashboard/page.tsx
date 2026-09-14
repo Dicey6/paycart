@@ -1,10 +1,13 @@
 "use client";
 
+import { useEffect } from "react";
 import { ChevronRight, CreditCard, Wallet } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { AppNav } from "@/components/Nav";
 import { VirtualCard } from "@/components/VirtualCard";
 import { Badge, Button, Card } from "@/components/ui";
-import { useUser } from "@/components/providers";
+import { useAuth } from "@/components/providers";
+import { WalletConnectControl } from "@/components/WalletConnectControl";
 
 function BalanceRow({
   symbol,
@@ -40,44 +43,58 @@ function BalanceRow({
 }
 
 export default function DashboardPage() {
-  const { username } = useUser();
-  const firstName = username?.trim() ? username.trim().split(" ")[0] : "there";
+  const router = useRouter();
+  const { session, profile, loading } = useAuth();
+  const username = profile?.username ?? "";
+  const firstName = username.trim() ? username.trim().split(" ")[0] : "there";
+
+  useEffect(() => {
+    if (!loading && !session) router.replace("/login");
+  }, [loading, router, session]);
+
+  if (loading || !session) {
+    return (
+      <div className="min-h-screen flex items-center justify-center px-5">
+       <p className="text-sm text-slate-500 dark:text-slate-400">Loading your VeyaPay account…</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen pb-10">
       <AppNav />
       <div className="max-w-6xl mx-auto px-5 sm:px-8 py-8 space-y-6">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Welcome, {firstName}</h1>
-          <p className="text-sm mt-1 text-neutral-500 dark:text-neutral-400">
-            Connect a wallet to fund your PayCart balance.
+          <div className="eyebrow">VEYA / DASHBOARD</div>
+          <h1 className="mt-3 text-3xl font-semibold tracking-tight text-white">Welcome, {firstName}</h1>
+          <p className="mt-2 text-sm text-slate-400">
+            Connect your Arc wallet to fund your VeyaPay balance with USDC.
           </p>
         </div>
 
         <div className="grid md:grid-cols-3 gap-5">
           <Card className="md:col-span-2 p-6">
             <div className="flex items-center justify-between mb-1">
-              <span className="text-sm text-neutral-500 dark:text-neutral-400">Available balance</span>
-              <Badge>UI placeholder value</Badge>
+              <span className="text-sm text-slate-400">Available balance</span>
+              <Badge tone="cyan">USDC · ARC</Badge>
             </div>
-            <div className="text-4xl font-semibold tracking-tight mb-6">$0.00</div>
-            <div className="divide-y divide-neutral-200 dark:divide-neutral-800">
-              <BalanceRow symbol="USDG" network="Robinhood Chain" amount="0.00" tone="green" />
-              <BalanceRow symbol="USDC" network="Solana" amount="0.00" tone="violet" />
+            <div className="mb-6 text-4xl font-semibold tracking-tight text-white">0.00 <span className="text-lg text-brand">USDC</span></div>
+            <div className="divide-y divide-white/10">
+              <BalanceRow symbol="USDC" network="Arc Blockchain" amount="0.00" tone="green" />
             </div>
             <div className="flex gap-3 mt-5">
-              <Button className="flex-1">
-                <Wallet className="w-4 h-4" /> Connect wallet to fund
-              </Button>
+              <div className="flex-1">
+                <WalletConnectControl />
+              </div>
               <Button variant="secondary" className="flex-1">
-                <CreditCard className="w-4 h-4" /> View card
+                <CreditCard className="w-4 h-4" /> View virtual card
               </Button>
             </div>
           </Card>
 
           <Card className="p-6 flex flex-col items-center">
-            <span className="text-sm mb-4 self-start text-neutral-500 dark:text-neutral-400">
-              Your card
+              <span className="eyebrow mb-4 self-start">
+              VEYAPAY CARD
             </span>
             <VirtualCard holderName={username} />
             <button className="text-sm font-medium mt-4 self-start text-brand-dark dark:text-brand flex items-center gap-1">
@@ -88,19 +105,17 @@ export default function DashboardPage() {
 
         <Card padded={false}>
           <div className="flex items-center justify-between px-5 pt-5 pb-1">
-            <h3 className="text-base font-semibold">Recent transactions</h3>
+            <h3 className="text-base font-semibold text-white">Arc activity</h3>
           </div>
           <div className="flex flex-col items-center text-center py-14 px-6">
-            <div className="w-12 h-12 rounded-full flex items-center justify-center mb-4 bg-neutral-50 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700">
-              <Wallet className="w-5 h-5 text-neutral-400 dark:text-neutral-500" />
+             <div className="w-12 h-12 rounded-full flex items-center justify-center mb-4 bg-brand/10 border border-brand/20">
+               <Wallet className="w-5 h-5 text-brand" />
             </div>
-            <h3 className="text-base font-semibold mb-1.5">No transactions yet</h3>
-            <p className="text-sm max-w-xs mb-5 text-neutral-500 dark:text-neutral-400">
-              Once you connect a wallet and fund your balance, activity will show up here.
+             <h3 className="text-base font-semibold mb-1.5 text-white">No Arc activity yet</h3>
+             <p className="text-sm max-w-xs mb-5 text-slate-400">
+               Connect an Arc wallet to see USDC funding and payment activity here.
             </p>
-            <Button>
-              <Wallet className="w-4 h-4" /> Connect wallet
-            </Button>
+             <WalletConnectControl />
           </div>
         </Card>
       </div>

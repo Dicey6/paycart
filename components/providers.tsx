@@ -1,6 +1,9 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState } from "react";
+import type { Session, User } from "@supabase/supabase-js";
+import { getSupabaseBrowserClient, type Profile } from "@/lib/supabase";
+import { connectArcWallet } from "@/lib/wallet";
 
 /* --------------------------------- Theme --------------------------------- */
 
@@ -9,14 +12,14 @@ type Theme = "light" | "dark";
 const ThemeContext = createContext<{
   theme: Theme;
   toggle: () => void;
-}>({ theme: "light", toggle: () => {} });
+}>({ theme: "dark", toggle: () => {} });
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>("light");
+  const [theme, setTheme] = useState<Theme>("dark");
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    const stored = window.localStorage.getItem("paycart-theme");
+    const stored = window.localStorage.getItem("veyapay-theme");
     if (stored === "dark" || stored === "light") setTheme(stored);
     setHydrated(true);
   }, []);
@@ -24,7 +27,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!hydrated) return;
     document.documentElement.classList.toggle("dark", theme === "dark");
-    window.localStorage.setItem("paycart-theme", theme);
+    window.localStorage.setItem("veyapay-theme", theme);
   }, [theme, hydrated]);
 
   return (
@@ -40,39 +43,179 @@ export function useTheme() {
   return useContext(ThemeContext);
 }
 
-/* ---------------------------------- User ---------------------------------- */
+/* ---------------------------------- Auth ---------------------------------- */
 
-const UserContext = createContext<{
-  username: string;
-  setUsername: (name: string) => void;
-}>({ username: "", setUsername: () => {} });
+type AuthContextValue = {
+  session: Session | null;
+  user: User | null;
+  profile: Profile | null;
+  loading: boolean;
+  error: string;
+  refreshProfile: () => Promise<void>;
+  signOut: () => Promise<void>;
+};
 
-export function UserProvider({ children }: { children: React.ReactNode }) {
-  const [username, setUsernameState] = useState("");
+const AuthContext = createContext<AuthContextValue>({
+  session: null,
+  user: null,
+  profile: null,
+  loading: true,
+  error: "",
+  refreshProfile: async () => {},
+  signOut: async () => {},
+});
+
+async function loadProfile(userId: string) {
+  const supabase = getSupabaseBrowserClient();
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("id, username, email, created_at, updated_at")
+    .eq("id", userId)
+    .maybeSingle();
+
+  if (error) throw error;
+  return data as Profile | null;
+}
+
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [session, setSession] = useState<Session | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    const stored = window.localStorage.getItem("paycart-username");
-    if (stored) setUsernameState(stored);
+    let mounted = true;
+    let subscription: { unsubscribe: () => void } | undefined;
+
+    const initialize = async () => {
+      try {
+        const supabase = getSupabaseBrowserClient();
+        const {
+          data: { session: currentSession },
+          error: sessionError,
+        } = await supabase.auth.getSession();
+
+        if (sessionError) throw sessionError;
+        if (!mounted) return;
+
+        setSession(currentSession);
+        setUser(currentSession?.user ?? null);
+        if (currentSession?.user) {
+          setProfile(await loadProfile(currentSession.user.id));
+        }
+        setError("");
+        const {
+          data: { subscription: authSubscription },
+        } = supabase.auth.onAuthStateChange((_, nextSession) => {
+          setSession(nextSession);
+          setUser(nextSession?.user ?? null);
+          if (!nextSession?.user) {
+            setProfile(null);
+            setLoading(false);
+            return;
+          }
+
+          window.setTimeout(async () => {
+            try {
+              const nextProfile = await loadProfile(nextSession.user.id);
+              if (mounted) {
+                setProfile(nextProfile);
+                setError("");
+              }
+            } catch (profileError) {
+              if (mounted) {
+                setError(profileError instanceof Error ? profileError.message : "Unable to load your profile.");
+              }
+            } finally {
+              if (mounted) setLoading(false);
+            }
+          }, 0);
+        });
+        subscription = authSubscription;
+      } catch (authError) {
+        if (mounted) setError(authError instanceof Error ? authError.message : "Unable to load authentication.");
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    };
+
+    void initialize();
+    return () => {
+      mounted = false;
+      subscription?.unsubscribe();
+    };
   }, []);
 
-  const setUsername = (name: string) => {
-    setUsernameState(name);
-    window.localStorage.setItem("paycart-username", name);
+  const refreshProfile = async () => {
+    if (!user) return;
+    setProfile(await loadProfile(user.id));
+  };
+
+  const signOut = async () => {
+    const supabase = getSupabaseBrowserClient();
+    const { error: signOutError } = await supabase.auth.signOut();
+    if (signOutError) throw signOutError;
   };
 
   return (
-    <UserContext.Provider value={{ username, setUsername }}>{children}</UserContext.Provider>
+    <AuthContext.Provider value={{ session, user, profile, loading, error, refreshProfile, signOut }}>
+      {children}
+    </AuthContext.Provider>
   );
 }
 
-export function useUser() {
-  return useContext(UserContext);
+export function useAuth() {
+  return useContext(AuthContext);
+}
+
+/* --------------------------------- Wallet --------------------------------- */
+
+type WalletContextValue = {
+  address: string;
+  network: "arc" | null;
+  connectArc: () => Promise<string>;
+  disconnect: () => void;
+};
+
+const WalletContext = createContext<WalletContextValue>({
+  address: "",
+  network: null,
+  connectArc: async () => "",
+  disconnect: () => {},
+});
+
+export function WalletProvider({ children }: { children: React.ReactNode }) {
+  const [address, setAddress] = useState("");
+  const [network, setNetwork] = useState<"arc" | null>(null);
+
+  const connectArc = async () => {
+    const nextAddress = await connectArcWallet();
+    setAddress(nextAddress);
+    setNetwork("arc");
+    return nextAddress;
+  };
+
+  return (
+    <WalletContext.Provider value={{ address, network, connectArc, disconnect: () => {
+      setAddress("");
+      setNetwork(null);
+    } }}>
+      {children}
+    </WalletContext.Provider>
+  );
+}
+
+export function useWallet() {
+  return useContext(WalletContext);
 }
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <ThemeProvider>
-      <UserProvider>{children}</UserProvider>
+      <AuthProvider>
+        <WalletProvider>{children}</WalletProvider>
+      </AuthProvider>
     </ThemeProvider>
   );
 }

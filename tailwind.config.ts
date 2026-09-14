@@ -10,9 +10,15 @@ const config: Config = {
     extend: {
       colors: {
         brand: {
-          DEFAULT: "#8DDD00",
-          dark: "#71B800",
-          light: "#A6EF33",
+          DEFAULT: "#52B9FF",
+          dark: "#1874E8",
+          light: "#B7ECFF",
+        },
+        arc: {
+          950: "#030712",
+          900: "#071426",
+          800: "#0B1E38",
+          700: "#12325A",
         },
       },
       fontFamily: {
