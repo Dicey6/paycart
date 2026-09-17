@@ -38,7 +38,7 @@ export default function DashboardPage() {
   const router = useRouter();
   const { session, profile, card, loading } = useAuth();
   const [revealed, setRevealed] = useState(false);
-  const username = profile?.username?.trim() || "veyapayx";
+  const username = profile?.username?.trim() ?? "";
   const firstName = username.trim() ? username.trim().split(" ")[0] : "there";
 
   useEffect(() => {

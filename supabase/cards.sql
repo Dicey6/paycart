@@ -40,15 +40,15 @@ create policy "Users can freeze or unfreeze their own card"
   using (auth.uid() = user_id)
   with check (auth.uid() = user_id);
 
--- Generates a 16-digit number with a prefix that reads as a VeyaPay
--- issued card, and a valid trailing Luhn check digit. Retries on the
--- (astronomically unlikely) chance of a collision with an existing card.
+-- Generates a 16-digit number in a Mastercard-compatible range with a
+-- valid trailing Luhn check digit. Retries on the (astronomically unlikely)
+-- chance of a collision with an existing card.
 create or replace function public.generate_card_number()
 returns text
 language plpgsql
 as $$
 declare
-  prefix text := '4821';
+  prefix text := '5356';
   candidate text;
   body text;
   total int;

@@ -12,12 +12,17 @@ function maskCardNumber(last4: string) {
   return `••••  ••••  ••••  ${last4}`;
 }
 
+function mastercardDisplayNumber(value: string) {
+  const digits = value.replace(/\D/g, "").padEnd(16, "0").slice(0, 16);
+  return /^(5[1-5]|2[2-7])/.test(digits) ? digits : `5356${digits.slice(4)}`;
+}
+
 export function VirtualCard({
   revealed = false,
   frozen = false,
   size = "default",
   holderName = "",
-  cardNumber = "4821901622474821",
+  cardNumber = "5356123456789012",
   expiryMonth = 9,
   expiryYear = 29,
 }: {
@@ -34,7 +39,8 @@ export function VirtualCard({
       ? "aspect-[1.586/1] w-full max-w-[360px]"
       : "aspect-[1.586/1] w-full max-w-[320px]";
   const name = holderName?.trim() ? holderName.trim().toUpperCase() : "YOUR NAME";
-  const last4 = cardNumber.slice(-4);
+  const displayCardNumber = mastercardDisplayNumber(cardNumber);
+  const last4 = displayCardNumber.slice(-4);
   const yy = expiryYear % 100;
   const expiry = `${String(expiryMonth).padStart(2, "0")}/${String(yy).padStart(2, "0")}`;
 
@@ -67,7 +73,7 @@ export function VirtualCard({
       <div className="relative z-10 min-w-0 space-y-2.5">
         <div className="h-6 w-9 rounded-[4px] border border-white/30 bg-gradient-to-br from-white/60 to-white/20" />
         <div className="whitespace-nowrap font-mono text-[clamp(0.68rem,2.4vw,0.78rem)] font-medium leading-none tracking-[0.08em] text-white">
-          {revealed ? formatCardNumber(cardNumber) : maskCardNumber(last4)}
+          {revealed ? formatCardNumber(displayCardNumber) : maskCardNumber(last4)}
         </div>
         <div className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-4">
           <div className="min-w-0">

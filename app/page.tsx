@@ -126,8 +126,8 @@ export default function HomePage() {
             <div className="absolute right-6 top-3 rounded-md border border-brand/20 bg-[#0A0D12] px-3 py-2 font-mono text-[10px] text-brand">
               ARC / MAINNET <span className="ml-2 text-emerald-400">● LIVE</span>
             </div>
-            <div className="relative z-10 rotate-[-3deg] transition-transform duration-150 ease-snap hover:rotate-0">
-              <VirtualCard size="large" holderName="veyapayx" />
+            <div className="relative z-10 w-full max-w-[360px]">
+              <VirtualCard size="large" />
             </div>
             <div className="panel absolute bottom-5 left-3 z-20 rounded-md px-4 py-3 sm:left-10">
               <div className="mb-1 flex items-center gap-2 text-[10px] font-mono uppercase tracking-wider text-slate-500">

@@ -12,7 +12,7 @@ import { getAuthRedirectUrl, getSupabaseBrowserClient } from "@/lib/supabase";
 export default function SignupPage() {
   const router = useRouter();
   const { session, loading: authLoading } = useAuth();
-  const [draft, setDraft] = useState("veyapayx");
+  const [draft, setDraft] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
@@ -95,7 +95,7 @@ export default function SignupPage() {
             <Field label="Username" hint="This is how you'll appear on your virtual card.">
               <Input
                 type="text"
-                 placeholder="veyapayx"
+                placeholder="Ren Uchiha"
                 value={draft}
                 maxLength={24}
                 onChange={(e) => setDraft(e.target.value)}

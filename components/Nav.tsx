@@ -84,7 +84,7 @@ export function PublicNav() {
 export function AppNav() {
   const router = useRouter();
   const { profile, signOut } = useAuth();
-  const username = profile?.username?.trim() || "veyapayx";
+  const username = profile?.username?.trim() ?? "";
   const initials = username.trim()
     ? username.trim().split(" ").map((word) => word[0]).slice(0, 2).join("").toUpperCase()
     : "VP";
