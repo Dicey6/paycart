@@ -38,7 +38,7 @@ export default function DashboardPage() {
   const router = useRouter();
   const { session, profile, card, loading } = useAuth();
   const [revealed, setRevealed] = useState(false);
-  const username = profile?.username ?? "";
+  const username = profile?.username?.trim() || "veyapayx";
   const firstName = username.trim() ? username.trim().split(" ")[0] : "there";
 
   useEffect(() => {
@@ -66,8 +66,8 @@ export default function DashboardPage() {
       <div className="max-w-6xl mx-auto px-5 sm:px-8 py-8 space-y-6">
         <div>
           <div className="eyebrow">VEYA / DASHBOARD</div>
-          <h1 className="mt-3 text-3xl font-semibold tracking-tight text-white">Welcome, {firstName}</h1>
-          <p className="mt-2 text-sm text-slate-400">
+           <h1 className="mt-3 text-3xl font-semibold tracking-tight text-slate-950 dark:text-white">Welcome, {firstName}</h1>
+           <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
             Connect your Arc wallet to fund your VeyaPay balance with USDC.
           </p>
         </div>
@@ -75,11 +75,11 @@ export default function DashboardPage() {
         <div className="grid md:grid-cols-3 gap-5">
           <Card className="md:col-span-2 p-6">
             <div className="flex items-center justify-between mb-1">
-              <span className="text-sm text-slate-400">Available balance</span>
+               <span className="text-sm text-slate-600 dark:text-slate-400">Available balance</span>
               <Badge tone="blue">USDC · ARC</Badge>
             </div>
-            <div className="mb-6 text-4xl font-semibold tracking-tight text-white">0.00 <span className="text-lg text-brand">USDC</span></div>
-            <div className="divide-y divide-white/10">
+             <div className="mb-6 text-4xl font-semibold tracking-tight text-slate-950 dark:text-white">0.00 <span className="text-lg text-brand">USDC</span></div>
+             <div className="divide-y divide-slate-200 dark:divide-white/10">
               <BalanceRow symbol="USDC" network="Arc Blockchain" amount="0.00" />
             </div>
             <div className="flex gap-3 mt-5">
@@ -123,14 +123,14 @@ export default function DashboardPage() {
 
         <Card padded={false}>
           <div className="flex items-center justify-between px-5 pt-5 pb-1">
-            <h3 className="text-base font-semibold text-white">Arc activity</h3>
+             <h3 className="text-base font-semibold text-slate-950 dark:text-white">Arc activity</h3>
           </div>
           <div className="flex flex-col items-center text-center py-14 px-6">
              <div className="w-12 h-12 rounded-md flex items-center justify-center mb-4 bg-brand/10 border border-brand/20">
                <Wallet className="w-5 h-5 text-brand" />
             </div>
-             <h3 className="text-base font-semibold mb-1.5 text-white">No Arc activity yet</h3>
-             <p className="text-sm max-w-xs mb-5 text-slate-400">
+              <h3 className="text-base font-semibold mb-1.5 text-slate-950 dark:text-white">No Arc activity yet</h3>
+              <p className="text-sm max-w-xs mb-5 text-slate-600 dark:text-slate-400">
                Connect an Arc wallet to see USDC funding and payment activity here.
             </p>
              <WalletConnectControl />

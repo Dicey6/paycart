@@ -5,7 +5,6 @@ import {
   CircleDollarSign,
   CreditCard,
   Eye,
-  Fingerprint,
   Globe,
   KeyRound,
   Lock,
@@ -62,7 +61,6 @@ const specs: Array<[ElementType, string, string]> = [
   [Zap, "Arc speed", "Designed for the low-latency settlement experience Arc makes possible."],
   [Wallet, "Wallet first", "Your wallet stays in control. VeyaPay only asks for a public connection."],
   [Lock, "Private by default", "Card details stay masked and sensitive actions stay deliberate."],
-  [Fingerprint, "Supabase Auth", "Account access is protected by persistent sessions and verified email."],
   [CreditCard, "Ready to spend", "A virtual card interface that takes onchain value into daily digital life."],
 ];
 
@@ -129,7 +127,7 @@ export default function HomePage() {
               ARC / MAINNET <span className="ml-2 text-emerald-400">● LIVE</span>
             </div>
             <div className="relative z-10 rotate-[-3deg] transition-transform duration-150 ease-snap hover:rotate-0">
-              <VirtualCard size="large" holderName="ALEX RIVERA" />
+              <VirtualCard size="large" holderName="veyapayx" />
             </div>
             <div className="panel absolute bottom-5 left-3 z-20 rounded-md px-4 py-3 sm:left-10">
               <div className="mb-1 flex items-center gap-2 text-[10px] font-mono uppercase tracking-wider text-slate-500">

@@ -4,7 +4,7 @@ import Link from "next/link";
 export function LogoMark({ size = 34 }: { size?: number }) {
   return (
     <div
-      className="flex items-center justify-center rounded-md border border-white/15 bg-white shrink-0 overflow-hidden"
+      className="flex shrink-0 items-center justify-center overflow-hidden rounded-xl border border-slate-200 bg-white p-1 shadow-sm dark:border-white/15"
       style={{ width: size, height: size }}
     >
       <Image
@@ -12,7 +12,7 @@ export function LogoMark({ size = 34 }: { size?: number }) {
         alt="VeyaPay"
         width={size}
         height={size}
-        className="w-full h-full object-cover object-left"
+        className="h-full w-full object-contain"
         priority
       />
     </div>
@@ -26,16 +26,8 @@ export function LogoLockup({
 }) {
   return (
     <Link href={href} className="flex items-center gap-2.5" aria-label="VeyaPay home">
-      <div className="relative h-11 w-[132px] overflow-hidden rounded-md border border-white/10 bg-white">
-        <Image
-          src="/veyapay-logo.jpg"
-          alt="VeyaPay: smart digital payments"
-          fill
-          sizes="132px"
-          className="object-contain"
-          priority
-        />
-      </div>
+      <LogoMark size={36} />
+      <span className="text-base font-semibold tracking-tight text-slate-950 dark:text-white">VeyaPay</span>
     </Link>
   );
 }

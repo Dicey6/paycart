@@ -9,7 +9,7 @@ export function ThemeToggle() {
     <button
       onClick={toggle}
       aria-label="Toggle theme"
-      className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 text-slate-300 transition-all duration-150 ease-snap hover:bg-white/10 hover:text-white active:scale-90"
+      className="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 text-slate-600 transition-all duration-150 ease-snap hover:bg-slate-100 hover:text-slate-950 active:scale-90 dark:border-white/10 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white"
     >
       {theme === "dark" ? (
           <Sun className="h-4 w-4 text-brand" />

@@ -8,8 +8,8 @@ export const metadata: Metadata = {
   description:
     "VeyaPay turns USDC on Arc Blockchain into a smarter way to pay online.",
   icons: {
-    icon: "/favicon.ico",
-    apple: "/apple-icon.png",
+    icon: "/veyapay-logo.jpg",
+    apple: "/veyapay-logo.jpg",
   },
 };
 

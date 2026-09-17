@@ -20,7 +20,7 @@ export function PublicNav() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-30 border-b border-white/10 bg-[#05070a]/90 backdrop-blur">
+    <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/90 backdrop-blur dark:border-white/10 dark:bg-[#05070a]/90">
       <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between px-5 sm:px-8">
         <LogoLockup />
         <nav className="hidden items-center gap-8 md:flex">
@@ -28,7 +28,7 @@ export function PublicNav() {
             <a
               key={link.href}
               href={link.href}
-              className="text-xs font-medium text-slate-400 transition-colors duration-150 hover:text-white"
+              className="text-xs font-medium text-slate-600 transition-colors duration-150 hover:text-slate-950 dark:text-slate-400 dark:hover:text-white"
             >
               {link.label}
             </a>
@@ -36,7 +36,7 @@ export function PublicNav() {
         </nav>
         <div className="hidden items-center gap-3 md:flex">
           <ThemeToggle />
-          <Link href="/login" className="px-3 py-2 text-xs font-medium text-slate-300 transition-colors duration-150 hover:text-white">
+          <Link href="/login" className="px-3 py-2 text-xs font-medium text-slate-700 transition-colors duration-150 hover:text-slate-950 dark:text-slate-300 dark:hover:text-white">
             Log in
           </Link>
           <Link href="/signup">
@@ -45,7 +45,7 @@ export function PublicNav() {
         </div>
         <button
           type="button"
-          className="rounded-md border border-white/10 p-2 text-slate-300 transition-colors duration-150 hover:bg-white/5 md:hidden"
+           className="rounded-md border border-slate-200 p-2 text-slate-600 transition-colors duration-150 hover:bg-slate-100 md:hidden dark:border-white/10 dark:text-slate-300 dark:hover:bg-white/5"
           onClick={() => setOpen((current) => !current)}
           aria-label="Open navigation"
         >
@@ -53,13 +53,13 @@ export function PublicNav() {
         </button>
       </div>
       {open && (
-        <div className="animate-menu-in origin-top border-t border-white/10 bg-[#0A0D12] px-5 py-5 md:hidden">
+        <div className="animate-menu-in origin-top border-t border-slate-200 bg-white px-5 py-5 md:hidden dark:border-white/10 dark:bg-[#0A0D12]">
           <nav className="space-y-4">
             {publicLinks.map((link) => (
               <a
                 key={link.href}
                 href={link.href}
-                className="block text-sm text-slate-300"
+                className="block text-sm text-slate-700 dark:text-slate-300"
                 onClick={() => setOpen(false)}
               >
                 {link.label}
@@ -84,13 +84,13 @@ export function PublicNav() {
 export function AppNav() {
   const router = useRouter();
   const { profile, signOut } = useAuth();
-  const username = profile?.username ?? "";
+  const username = profile?.username?.trim() || "veyapayx";
   const initials = username.trim()
     ? username.trim().split(" ").map((word) => word[0]).slice(0, 2).join("").toUpperCase()
     : "VP";
 
   return (
-    <header className="sticky top-0 z-30 border-b border-white/10 bg-[#05070a]/95 backdrop-blur">
+    <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/95 backdrop-blur dark:border-white/10 dark:bg-[#05070a]/95">
       <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between px-5 sm:px-8">
         <LogoLockup href="/dashboard" />
         <div className="flex items-center gap-2">
@@ -103,7 +103,7 @@ export function AppNav() {
           <ThemeToggle />
           <button
             type="button"
-            className="hidden h-9 w-9 items-center justify-center rounded-full border border-white/10 text-slate-400 transition-colors duration-150 ease-snap hover:bg-white/10 hover:text-white sm:flex"
+             className="hidden h-9 w-9 items-center justify-center rounded-full border border-slate-200 text-slate-500 transition-colors duration-150 ease-snap hover:bg-slate-100 hover:text-slate-950 dark:border-white/10 dark:text-slate-400 dark:hover:bg-white/10 dark:hover:text-white sm:flex"
             aria-label="Notifications"
           >
             <Bell className="h-4 w-4" />
@@ -117,7 +117,7 @@ export function AppNav() {
               await signOut();
               router.replace("/login");
             }}
-            className="hidden px-2 py-2 text-xs font-medium text-slate-400 transition-colors duration-150 hover:text-white sm:block"
+             className="hidden px-2 py-2 text-xs font-medium text-slate-600 transition-colors duration-150 hover:text-slate-950 dark:text-slate-400 dark:hover:text-white sm:block"
           >
             Log out
           </button>

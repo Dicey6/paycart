@@ -4,7 +4,8 @@ import Image from "next/image";
 import { Snowflake } from "lucide-react";
 
 function formatCardNumber(digits: string) {
-  return digits.replace(/(.{4})/g, "$1  ").trim();
+  const groups = digits.replace(/\D/g, "").match(/.{1,4}/g) ?? [];
+  return groups.join("  ");
 }
 
 function maskCardNumber(last4: string) {
@@ -29,7 +30,9 @@ export function VirtualCard({
   expiryYear?: number;
 }) {
   const dims =
-    size === "large" ? "aspect-[1.586/1] w-full max-w-[260px]" : "aspect-[1.586/1] w-full max-w-[220px]";
+    size === "large"
+      ? "aspect-[1.586/1] w-full max-w-[360px]"
+      : "aspect-[1.586/1] w-full max-w-[320px]";
   const name = holderName?.trim() ? holderName.trim().toUpperCase() : "YOUR NAME";
   const last4 = cardNumber.slice(-4);
   const yy = expiryYear % 100;
@@ -37,42 +40,43 @@ export function VirtualCard({
 
   return (
     <div
-      className={`relative ${dims} rounded-xl p-3.5 flex flex-col justify-between overflow-hidden select-none ${
+      className={`payment-card relative isolate ${dims} rounded-2xl p-4 sm:p-5 flex flex-col justify-between overflow-hidden select-none shadow-[0_18px_45px_rgba(3,15,38,0.28)] ${
         frozen ? "grayscale" : ""
       }`}
       style={{
         background: "linear-gradient(155deg, #060B14 0%, #0E2C52 55%, #1B5FD9 100%)",
       }}
+      aria-label={`VeyaPay virtual card for ${name}`}
     >
-      <div className="flex items-start justify-between relative z-10">
-        <div className="flex items-center gap-1.5">
-          <div className="w-5 h-5 rounded-sm bg-white/95 flex items-center justify-center overflow-hidden">
-            <Image src="/veyapay-logo.jpg" alt="" width={20} height={20} className="w-full h-full object-cover object-left" />
+      <div className="relative z-10 flex items-start justify-between gap-3">
+        <div className="flex min-w-0 items-center gap-2">
+          <div className="flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-md bg-white p-0.5">
+            <Image src="/veyapay-logo.jpg" alt="" width={28} height={28} className="h-full w-full object-contain" />
           </div>
-          <span className="text-white font-semibold text-xs tracking-tight">VeyaPay</span>
+          <span className="truncate text-xs font-semibold tracking-tight text-white">VeyaPay</span>
         </div>
         {frozen ? (
-          <span className="flex items-center gap-1 text-[9px] font-medium text-white/70 bg-white/10 px-1.5 py-0.5 rounded-sm">
+          <span className="flex shrink-0 items-center gap-1 rounded-sm bg-white/10 px-1.5 py-0.5 text-[9px] font-medium text-white/70">
             <Snowflake className="w-2.5 h-2.5" /> Frozen
           </span>
         ) : (
-          <span className="text-[9px] font-medium text-white/60">ARC · USDC</span>
+          <span className="shrink-0 text-[9px] font-medium text-white/60">ARC · USDC</span>
         )}
       </div>
 
-      <div className="relative z-10 space-y-2">
-        <div className="h-5 w-7 rounded-[3px] bg-gradient-to-br from-white/60 to-white/20 border border-white/30" />
-        <div className="text-white text-xs tracking-[0.12em] font-medium">
+      <div className="relative z-10 min-w-0 space-y-2.5">
+        <div className="h-6 w-9 rounded-[4px] border border-white/30 bg-gradient-to-br from-white/60 to-white/20" />
+        <div className="whitespace-nowrap font-mono text-[clamp(0.68rem,2.4vw,0.78rem)] font-medium leading-none tracking-[0.08em] text-white">
           {revealed ? formatCardNumber(cardNumber) : maskCardNumber(last4)}
         </div>
-        <div className="flex items-end justify-between">
-          <div>
-            <div className="text-white/40 text-[8px] uppercase tracking-wide mb-0.5">Card holder</div>
-            <div className="text-white text-[11px] font-medium truncate max-w-[120px]">{name}</div>
+        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-4">
+          <div className="min-w-0">
+            <div className="mb-0.5 text-[8px] uppercase tracking-wide text-white/50">Card holder</div>
+            <div className="max-w-[150px] truncate text-[11px] font-medium text-white">{name}</div>
           </div>
           <div className="text-right">
-            <div className="text-white/40 text-[8px] uppercase tracking-wide mb-0.5">Valid thru</div>
-            <div className="text-white text-[11px] font-medium">{expiry}</div>
+            <div className="mb-0.5 text-[8px] uppercase tracking-wide text-white/50">Valid thru</div>
+            <div className="text-[11px] font-medium text-white">{expiry}</div>
           </div>
         </div>
       </div>

@@ -1,6 +1,6 @@
 # VeyaPay
 
-A futuristic USDC payment interface for Arc Blockchain with Supabase Auth and public wallet-connection initiation, built with Next.js 14 (App Router), TypeScript, and Tailwind CSS.
+A futuristic USDC payment interface for Arc Blockchain with account access and public wallet-connection initiation, built with Next.js 14 (App Router), TypeScript, and Tailwind CSS.
 
 ## Pages
 
