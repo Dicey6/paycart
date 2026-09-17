@@ -29,7 +29,7 @@ export default function SignupPage() {
     setError("");
     setMessage("");
     if (!draft.trim()) {
-      setError("Enter a username — it'll appear on your card.");
+      setError("Enter a username. It'll appear on your card.");
       return;
     }
     if (password !== confirm) {

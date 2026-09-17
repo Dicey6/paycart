@@ -4,7 +4,7 @@ import "./globals.css";
 import { Providers } from "@/components/providers";
 
 export const metadata: Metadata = {
-  title: "VeyaPay — Smart digital payments on Arc",
+  title: "VeyaPay: Smart digital payments on Arc",
   description:
     "VeyaPay turns USDC on Arc Blockchain into a smarter way to pay online.",
   icons: {
@@ -20,7 +20,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="font-sans antialiased bg-[#f4f9ff] dark:bg-[#050b17] text-slate-950 dark:text-slate-50">
+      <body className="font-sans antialiased bg-[#f7f9fc] dark:bg-[#05070a] text-slate-950 dark:text-slate-50">
         <Providers>{children}</Providers>
       </body>
     </html>

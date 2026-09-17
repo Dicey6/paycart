@@ -12,7 +12,7 @@ import { WalletConnectControl } from "./WalletConnectControl";
 
 const publicLinks = [
   { href: "/#protocol", label: "Protocol" },
-  { href: "/#security", label: "Security" },
+  { href: "/#cohort", label: "The Cohort" },
   { href: "/#arc", label: "Arc network" },
 ];
 
@@ -20,7 +20,7 @@ export function PublicNav() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-30 border-b border-white/10 bg-[#050b17]/75 backdrop-blur-xl">
+    <header className="sticky top-0 z-30 border-b border-white/10 bg-[#05070a]/90 backdrop-blur">
       <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between px-5 sm:px-8">
         <LogoLockup />
         <nav className="hidden items-center gap-8 md:flex">
@@ -28,7 +28,7 @@ export function PublicNav() {
             <a
               key={link.href}
               href={link.href}
-              className="text-xs font-medium text-slate-400 transition-colors hover:text-white"
+              className="text-xs font-medium text-slate-400 transition-colors duration-150 hover:text-white"
             >
               {link.label}
             </a>
@@ -36,7 +36,7 @@ export function PublicNav() {
         </nav>
         <div className="hidden items-center gap-3 md:flex">
           <ThemeToggle />
-          <Link href="/login" className="px-3 py-2 text-xs font-medium text-slate-300 transition-colors hover:text-white">
+          <Link href="/login" className="px-3 py-2 text-xs font-medium text-slate-300 transition-colors duration-150 hover:text-white">
             Log in
           </Link>
           <Link href="/signup">
@@ -45,7 +45,7 @@ export function PublicNav() {
         </div>
         <button
           type="button"
-          className="rounded-lg border border-white/10 p-2 text-slate-300 md:hidden"
+          className="rounded-md border border-white/10 p-2 text-slate-300 transition-colors duration-150 hover:bg-white/5 md:hidden"
           onClick={() => setOpen((current) => !current)}
           aria-label="Open navigation"
         >
@@ -53,7 +53,7 @@ export function PublicNav() {
         </button>
       </div>
       {open && (
-        <div className="border-t border-white/10 bg-[#071426] px-5 py-5 md:hidden">
+        <div className="animate-menu-in origin-top border-t border-white/10 bg-[#0A0D12] px-5 py-5 md:hidden">
           <nav className="space-y-4">
             {publicLinks.map((link) => (
               <a
@@ -90,20 +90,20 @@ export function AppNav() {
     : "VP";
 
   return (
-    <header className="sticky top-0 z-30 border-b border-white/10 bg-[#050b17]/80 backdrop-blur-xl">
+    <header className="sticky top-0 z-30 border-b border-white/10 bg-[#05070a]/95 backdrop-blur">
       <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between px-5 sm:px-8">
         <LogoLockup href="/dashboard" />
         <div className="flex items-center gap-2">
           <div className="hidden sm:block">
             <WalletConnectControl compact />
           </div>
-          <div className="hidden items-center gap-1.5 rounded-full border border-brand/20 bg-brand/5 px-3 py-2 text-[10px] font-mono uppercase tracking-wider text-brand lg:flex">
+          <div className="hidden items-center gap-1.5 rounded-md border border-brand/20 bg-brand/5 px-3 py-2 text-[10px] font-mono uppercase tracking-wider text-brand lg:flex">
             <Radio className="h-3.5 w-3.5" /> Arc online
           </div>
           <ThemeToggle />
           <button
             type="button"
-            className="hidden h-9 w-9 items-center justify-center rounded-full border border-white/10 text-slate-400 transition-colors hover:bg-white/10 hover:text-white sm:flex"
+            className="hidden h-9 w-9 items-center justify-center rounded-full border border-white/10 text-slate-400 transition-colors duration-150 ease-snap hover:bg-white/10 hover:text-white sm:flex"
             aria-label="Notifications"
           >
             <Bell className="h-4 w-4" />
@@ -117,7 +117,7 @@ export function AppNav() {
               await signOut();
               router.replace("/login");
             }}
-            className="hidden px-2 py-2 text-xs font-medium text-slate-400 transition-colors hover:text-white sm:block"
+            className="hidden px-2 py-2 text-xs font-medium text-slate-400 transition-colors duration-150 hover:text-white sm:block"
           >
             Log out
           </button>

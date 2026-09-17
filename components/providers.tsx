@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from "react";
 import type { Session, User } from "@supabase/supabase-js";
-import { getSupabaseBrowserClient, type Profile } from "@/lib/supabase";
+import { getSupabaseBrowserClient, type Card, type Profile } from "@/lib/supabase";
 import { connectArcWallet } from "@/lib/wallet";
 
 /* --------------------------------- Theme --------------------------------- */
@@ -49,9 +49,11 @@ type AuthContextValue = {
   session: Session | null;
   user: User | null;
   profile: Profile | null;
+  card: Card | null;
   loading: boolean;
   error: string;
   refreshProfile: () => Promise<void>;
+  refreshCard: () => Promise<void>;
   signOut: () => Promise<void>;
 };
 
@@ -59,9 +61,11 @@ const AuthContext = createContext<AuthContextValue>({
   session: null,
   user: null,
   profile: null,
+  card: null,
   loading: true,
   error: "",
   refreshProfile: async () => {},
+  refreshCard: async () => {},
   signOut: async () => {},
 });
 
@@ -77,10 +81,23 @@ async function loadProfile(userId: string) {
   return data as Profile | null;
 }
 
+async function loadCard(userId: string) {
+  const supabase = getSupabaseBrowserClient();
+  const { data, error } = await supabase
+    .from("cards")
+    .select("id, user_id, card_number, last4, expiry_month, expiry_year, frozen, created_at")
+    .eq("user_id", userId)
+    .maybeSingle();
+
+  if (error) throw error;
+  return data as Card | null;
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [card, setCard] = useState<Card | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -102,7 +119,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setSession(currentSession);
         setUser(currentSession?.user ?? null);
         if (currentSession?.user) {
-          setProfile(await loadProfile(currentSession.user.id));
+          const [nextProfile, nextCard] = await Promise.all([
+            loadProfile(currentSession.user.id),
+            loadCard(currentSession.user.id),
+          ]);
+          setProfile(nextProfile);
+          setCard(nextCard);
         }
         setError("");
         const {
@@ -112,20 +134,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setUser(nextSession?.user ?? null);
           if (!nextSession?.user) {
             setProfile(null);
+            setCard(null);
             setLoading(false);
             return;
           }
 
           window.setTimeout(async () => {
             try {
-              const nextProfile = await loadProfile(nextSession.user.id);
+              const [nextProfile, nextCard] = await Promise.all([
+                loadProfile(nextSession.user.id),
+                loadCard(nextSession.user.id),
+              ]);
               if (mounted) {
                 setProfile(nextProfile);
+                setCard(nextCard);
                 setError("");
               }
             } catch (profileError) {
               if (mounted) {
-                setError(profileError instanceof Error ? profileError.message : "Unable to load your profile.");
+                setError(profileError instanceof Error ? profileError.message : "Unable to load your account.");
               }
             } finally {
               if (mounted) setLoading(false);
@@ -152,6 +179,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setProfile(await loadProfile(user.id));
   };
 
+  const refreshCard = async () => {
+    if (!user) return;
+    setCard(await loadCard(user.id));
+  };
+
   const signOut = async () => {
     const supabase = getSupabaseBrowserClient();
     const { error: signOutError } = await supabase.auth.signOut();
@@ -159,7 +191,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ session, user, profile, loading, error, refreshProfile, signOut }}>
+    <AuthContext.Provider value={{ session, user, profile, card, loading, error, refreshProfile, refreshCard, signOut }}>
       {children}
     </AuthContext.Provider>
   );

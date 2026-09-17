@@ -67,7 +67,7 @@ export default function LoginPage() {
       <div className="flex-1 flex items-center justify-center px-5 py-10">
         <div className="w-full max-w-sm">
           <div className="eyebrow mb-3">VEYA / ACCESS</div>
-          <h1 className="text-3xl font-semibold tracking-tight mb-1.5 text-white">Log in to VeyaPay</h1>
+          <h1 className="text-3xl font-semibold tracking-tight mb-1.5 text-white">Log in</h1>
           <p className="text-sm mb-7 text-slate-400">
             Continue to your Arc wallet-funded virtual card.
           </p>

@@ -10,15 +10,16 @@ const config: Config = {
     extend: {
       colors: {
         brand: {
-          DEFAULT: "#52B9FF",
-          dark: "#1874E8",
-          light: "#B7ECFF",
+          DEFAULT: "#3E8EFF",
+          dark: "#1B5FD9",
+          light: "#8FC1FF",
         },
-        arc: {
-          950: "#030712",
-          900: "#071426",
-          800: "#0B1E38",
-          700: "#12325A",
+        ink: {
+          950: "#05070A",
+          900: "#0A0D12",
+          800: "#0E1015",
+          700: "#14171D",
+          600: "#1B1F27",
         },
       },
       fontFamily: {
@@ -32,6 +33,23 @@ const config: Config = {
           "Arial",
           "sans-serif",
         ],
+      },
+      transitionTimingFunction: {
+        snap: "cubic-bezier(0.2, 0, 0, 1)",
+      },
+      keyframes: {
+        "menu-in": {
+          "0%": { opacity: "0", transform: "translateY(-4px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        "fade-in": {
+          "0%": { opacity: "0" },
+          "100%": { opacity: "1" },
+        },
+      },
+      animation: {
+        "menu-in": "menu-in 150ms cubic-bezier(0.2, 0, 0, 1)",
+        "fade-in": "fade-in 120ms ease-out",
       },
     },
   },

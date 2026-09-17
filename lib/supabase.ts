@@ -8,6 +8,17 @@ export type Profile = {
   updated_at: string;
 };
 
+export type Card = {
+  id: string;
+  user_id: string;
+  card_number: string;
+  last4: string;
+  expiry_month: number;
+  expiry_year: number;
+  frozen: boolean;
+  created_at: string;
+};
+
 let browserClient: SupabaseClient | undefined;
 
 export function getSupabaseBrowserClient() {
